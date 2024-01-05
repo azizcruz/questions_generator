@@ -1,0 +1,61 @@
+version: '2'
+
+services:
+  frontend:
+    image: angular_app
+    build: 
+      context: .
+      dockerfile: Dockerfile.frontend
+    volumes:
+      - ./frontend:/app/frontend
+    container_name: frontend_app
+    working_dir: /app/frontend
+    ports:
+      - "4200:4200"
+    command: bash -c 'npm install -g @angular/cli && ng serve'
+    networks:
+      - laravel_network
+    depends_on:
+      - db
+      - backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    image: laravel-app
+    container_name: laravel_app
+    volumes:
+      - ./backend:/var/www/html
+    ports:
+      - "8080:8000"
+    networks:
+      - laravel_network
+    depends_on:
+      - db
+    environment:
+      SERVICE_NAME: app
+      DB_HOST: db
+      DB_DATABASE: laravel
+      DB_USERNAME: user
+      DB_PASSWORD: password
+
+  db:
+    image: mysql:5.7.44
+    container_name: laravel_db
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel_network
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+
+networks:
+  laravel_network:

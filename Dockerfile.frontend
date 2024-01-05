@@ -1,0 +1,18 @@
+FROM node:21-alpine
+
+# Install bash
+RUN apk add --no-cache bash
+
+# Your additional configuration or commands can go here if needed
+
+# Set the working directory
+WORKDIR /app
+
+# Copy your application files (if any) to the container
+COPY . /app
+
+# Any other setup or commands needed for your application
+
+RUN npm install -g @angular/cli
+
+

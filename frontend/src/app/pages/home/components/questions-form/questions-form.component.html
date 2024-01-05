@@ -1,0 +1,164 @@
+<section class="container vh-100">
+  <div class="d-flex align-items-center h-100" *ngIf="!isLoading && questionsList === null">
+    <form (ngSubmit)="onSubmit()" class="flex-grow-1">
+      <div class="form-group mb-2">
+        <label for="exampleInputEmail1">Full name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="exampleInputEmail1"
+          aria-describedby="fullNameHelp"
+          placeholder="Full name"
+          name="fullName"
+          [formControl]="fullName"
+        />
+        <div
+          *ngIf="
+            fullName?.invalid &&
+            (fullName?.dirty || fullName?.touched) &&
+            fullName.errors!['required']
+          "
+          class="text-danger"
+        >
+          Full name is required
+        </div>
+      </div>
+      <div class="form-group mb-2">
+        <label for="exampleInputEmail1">Email address</label>
+        <input
+          type="email"
+          class="form-control"
+          id="exampleInputEmail1"
+          aria-describedby="emailHelp"
+          placeholder="Enter email"
+          name="email"
+          [formControl]="email"
+        />
+        <small id="emailHelp" class="form-text text-muted"
+          >We'll never share your email with anyone else.</small
+        >
+        <div
+          *ngIf="
+            email?.invalid &&
+            (email?.dirty || email?.touched) &&
+            email.errors!['required']
+          "
+          class="text-danger"
+        >
+          Email is required
+        </div>
+        <div
+          *ngIf="
+            email?.invalid &&
+            (email?.dirty || email?.touched) &&
+            email.errors!['email']
+          "
+          class="text-danger"
+        >
+          Email is invalid
+        </div>
+      </div>
+
+      <div class="form-group mb-2">
+        <label for="numberOfQuestions">Number of questions</label>
+        <input
+          type="number"
+          class="form-control"
+          id="numberOfQuestions"
+          aria-describedby="numberOfQuestionsHelp"
+          placeholder="Number of questions"
+          name="numberOfQuestions"
+          [formControl]="numberOfQuestions"
+        />
+        <div
+          *ngIf="
+            numberOfQuestions?.invalid &&
+            (numberOfQuestions?.dirty || numberOfQuestions?.touched) &&
+            numberOfQuestions.errors!['required']
+          "
+          class="text-danger"
+        >
+          Number of questions is required
+        </div>
+        <div
+          *ngIf="
+            numberOfQuestions?.invalid &&
+            (numberOfQuestions?.dirty || numberOfQuestions?.touched) &&
+            numberOfQuestions.errors!['min']
+          "
+          class="text-danger"
+        >
+          Must be at least 1
+        </div>
+        <div
+          *ngIf="
+            numberOfQuestions?.invalid &&
+            (numberOfQuestions?.dirty || numberOfQuestions?.touched) &&
+            numberOfQuestions.errors!['max']
+          "
+          class="text-danger"
+        >
+          Must be at most 49
+        </div>
+      </div>
+
+      <div class="form-group mb-2">
+        <label for="difficulty">Select Difficulty</label>
+        <select
+          class="form-control"
+          id="difficulty"
+          name="difficulty"
+          [formControl]="difficulty"
+        >
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+        <div
+          *ngIf="
+            difficulty?.invalid &&
+            (difficulty?.dirty || difficulty?.touched) &&
+            difficulty.errors!['required']
+          "
+          class="text-danger"
+        >
+          Difficulty is required
+        </div>
+      </div>
+
+      <div class="form-group mb-2">
+        <label for="type">Select Type</label>
+        <select class="form-control" id="type" name="type" [formControl]="type">
+          <option value="multiple">Multiple Choice</option>
+          <option value="boolean">True/False</option>
+        </select>
+        <div
+          *ngIf="
+            type?.invalid &&
+            (type?.dirty || type?.touched) &&
+            type.errors!['required']
+          "
+          class="text-danger"
+        >
+          Type is required
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="!isValidForm">
+        Create questions
+      </button>
+    </form>
+  </div>
+
+  <div class="d-flex align-items-center h-100" *ngIf="isLoading">
+    <div class="flex-grow-1 d-flex justify-content-center">
+      <div class="spinner-grow text-primary" role="status"></div>
+    </div>
+  </div>
+
+  <div *ngIf="questionsList !== null" class="d-flex align-items-center h-100">
+    <div class="flex-grow-1">
+      <app-questions-test [questionsList]="questionsList" (resetQuestions)="resetQuestions()" />
+    </div>
+  </div>
+</section>

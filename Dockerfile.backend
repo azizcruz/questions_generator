@@ -1,0 +1,32 @@
+FROM php:8.1-fpm
+
+RUN apt-get update && apt-get install -y \
+		libfreetype-dev \
+		libjpeg62-turbo-dev \
+		libpng-dev \
+	&& docker-php-ext-configure gd --with-freetype --with-jpeg \
+	&& docker-php-ext-install -j$(nproc) gd
+
+RUN docker-php-ext-install pdo pdo_mysql
+
+# Create a non-root user
+RUN groupadd -g 1000 appuser && useradd -u 1000 -g appuser -m appuser
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Change ownership of the project directory to the new user
+RUN chown -R appuser:appuser /var/www/html
+
+# Switch to the new user
+USER appuser
+
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+RUN php -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+RUN php composer-setup.php --install-dir=/home/appuser --filename=composer
+RUN php -r "unlink('composer-setup.php');"
+
+ENV PATH="/home/appuser/.composer/vendor/bin:${PATH}"
+
+CMD ["php", "artisan", "serve", "--host", "0.0.0.0"]

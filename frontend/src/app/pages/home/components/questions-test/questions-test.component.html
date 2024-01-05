@@ -1,0 +1,86 @@
+<section
+  *ngIf="!startTest && !showResults"
+  class="d-flex flex-column justify-content-center align-items-center"
+>
+  <div
+    *ngIf="questionsList !== null && questionsList.length === 0"
+    class="d-flex flex-column align-items-center justify-content-center"
+  >
+    <h1 class="mb-2">There are no questions</h1>
+    <button (click)="back()" class="btn btn-primary btn-lg"> Reset & Start Again </button>
+  </div>
+  <div *ngIf="questionsList !== null && questionsList.length > 0"
+    class="d-flex flex-column align-items-center justify-content-center">
+    <h1>Your test is ready</h1>
+    <button (click)="startTest = true" class="btn btn-primary btn-lg">
+      Start Test
+    </button>
+  </div>
+</section>
+
+<section *ngIf="startTest && !showResults && currentQuestion">
+  <div class="d-flex justify-content-between mb-2">
+    <p class="mb-2 fw-bold text-center text-info">
+      {{ currentQuestionIndex + 1 }} / {{ totalPoints }}
+    </p>
+    <div
+      [ngClass]="{
+        'btn btn-md': true,
+        'btn-success': currentQuestion.difficulty === 'easy',
+        'btn-warning': currentQuestion.difficulty === 'medium',
+        'btn-danger': currentQuestion.difficulty === 'hard'
+      }"
+    >
+      {{ currentQuestion.difficulty | uppercase }}
+    </div>
+  </div>
+  <h3 [innerHTML]="sanitizeHtml(currentQuestion.question)"></h3>
+  <div class="list-group">
+    <button
+      type="button"
+      class="list-group-item list-group-item-action"
+      [ngClass]="{ active: userAnswer === choice }"
+      *ngFor="let choice of choices"
+      (click)="userAnswer = choice"
+      [innerHTML]="sanitizeHtml(choice)"
+    ></button>
+
+    <button
+      class="btn btn-success btn-lg mt-3"
+      (click)="nextQuestion(userAnswer)"
+    >
+      Next
+    </button>
+  </div>
+</section>
+
+<section *ngIf="showResults" class="d-flex flex-column align-items-center">
+  <h1 class="mb-3 fw-bold text-center text-success">
+    Your score is {{ score }} / {{ totalPoints }}
+  </h1>
+  <h2>Your Answers</h2>
+  <div class="list-group w-100 mb-2 your-answers-wrapper">
+    <div class="list-group-item">
+      <div
+        class="d-flex justify-content-between"
+        *ngFor="let answer of userAnswers"
+      >
+        <h5 [innerHTML]="sanitizeHtml(answer.userAnswer)"></h5>
+        <div
+          [ngClass]="{
+            'text-success': answer.result,
+            'text-danger': !answer.result
+          }"
+        >
+          {{ answer.result ? "&#10004;" : "&#10005;" }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <button (click)="restartTest()" class="btn btn-primary btn-lg">
+    Start Again
+  </button>
+  <button (click)="back()" class="btn btn-danger btn-lg mt-3">
+    Reset & Start Again
+  </button>
+</section>
